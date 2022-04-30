@@ -16,7 +16,6 @@ export const api = axios.create({
 
 api.interceptors.response.use(
     (response) => {
-        console.log('response successfully', response);
         return response;
     },
     (error: AxiosError) => {
@@ -44,13 +43,13 @@ api.interceptors.response.use(
                                 path: '/',
                             });
 
-                            if (response.data.refreshtoken) {
-                                console.log('🚀  newToken', response.data.refreshtoken);
-                                setCookie(undefined, 'nextauth.refreshToken', response.data.refreshtoken, {
-                                    maxAge: 60 * 60 * 24 * 30, // 30 days
-                                    path: '/',
-                                });
-                            }
+                            console.log('api - response', response);
+                            console.log('api - response.data.refreshtoken', response.data.refreshtoken);
+
+                            setCookie(undefined, 'nextauth.refreshToken', response.data.refreshtoken, {
+                                maxAge: 60 * 60 * 24 * 30, // 30 days
+                                path: '/',
+                            });
 
                             // @ts-ignore
                             api.defaults.headers['Authorization'] = `Bearer ${token}`;

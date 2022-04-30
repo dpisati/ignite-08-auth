@@ -1,15 +1,19 @@
-import { useContext, useLayoutEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { api } from '../services/api';
 
 export default function Dashboard() {
     const { user } = useContext(AuthContext);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         api.get('me')
-            .then((res) => console.log('dashboard', res))
-            .catch((err) => console.log('dashboard', err));
+            .then((res) => console.log('dashboard component - ', res))
+            .catch((err) => console.log('dashboard component - ', err));
     }, []);
 
-    return <h1>Dashboard: {user?.email}</h1>;
+    return (
+        <>
+            <h1>Dashboard: {user?.email}</h1>
+        </>
+    );
 }
