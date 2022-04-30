@@ -10,6 +10,7 @@ const Home: NextPage = () => {
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
+
         const data = {
             email,
             password,
