@@ -43,10 +43,7 @@ api.interceptors.response.use(
                                 path: '/',
                             });
 
-                            console.log('api - response', response);
-                            console.log('api - response.data.refreshtoken', response.data.refreshtoken);
-
-                            setCookie(undefined, 'nextauth.refreshToken', response.data.refreshtoken, {
+                            setCookie(undefined, 'nextauth.refreshToken', response.data.refreshToken, {
                                 maxAge: 60 * 60 * 24 * 30, // 30 days
                                 path: '/',
                             });
@@ -77,7 +74,7 @@ api.interceptors.response.use(
                     });
                 });
             } else {
-                // signOut();
+                signOut();
             }
         }
 
