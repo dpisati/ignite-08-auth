@@ -1,8 +1,10 @@
-import type { NextPage } from 'next';
+import type { GetServerSideProps } from 'next';
+import { parseCookies } from 'nookies';
 import { FormEvent, useContext, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import { withSSRGuest } from '../utils/withSSRGuest';
 
-const Home: NextPage = () => {
+export default function Home() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -21,12 +23,28 @@ const Home: NextPage = () => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <input type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value as string)} />
-            <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value as string)} />
+            <input
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value as string)}
+            />
+            <input
+                type="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value as string)}
+            />
 
             <button type="submit">Submit</button>
         </form>
     );
-};
+}
 
-export default Home;
+export const getServerSideProps: GetServerSideProps = withSSRGuest(
+    async (ctx) => {
+        return {
+            props: {},
+        };
+    }
+);

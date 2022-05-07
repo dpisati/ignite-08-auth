@@ -1,7 +1,8 @@
 import Router from 'next/router';
 import { createContext, ReactNode, useEffect, useState } from 'react';
-import { api } from '../services/api';
+
 import { setCookie, parseCookies, destroyCookie } from 'nookies';
+import { api } from '../services/apiClient';
 
 type SignInCredentials = {
     email: string;
@@ -10,8 +11,9 @@ type SignInCredentials = {
 
 type AuthContextData = {
     signIn(credentials: SignInCredentials): Promise<void>;
+    signOut(): void;
     isAuthenticated: boolean;
-    user: User;
+    user: User | undefined;
 };
 
 type User = {
@@ -27,16 +29,32 @@ interface AuthProviderProps {
 
 export const AuthContext = createContext({} as AuthContextData);
 
+let authChannel: BroadcastChannel;
+
 export function signOut() {
     destroyCookie(undefined, 'nextauth.token');
     destroyCookie(undefined, 'nextauth.refreshToken');
+    authChannel.postMessage('signOut');
     Router.push('/');
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User>();
-
     const isAuthenticated = !!user;
+
+    useEffect(() => {
+        authChannel = new BroadcastChannel('auth');
+
+        authChannel.onmessage = (message) => {
+            switch (message.data) {
+                case 'signOut':
+                    signOut();
+                    break;
+                default:
+                    break;
+            }
+        };
+    }, []);
 
     useEffect(() => {
         const { 'nextauth.token': token } = parseCookies();
@@ -87,5 +105,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     }
     // @ts-ignore
-    return <AuthContext.Provider value={{ user, signIn, isAuthenticated }}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider
+            value={{ user, signIn, isAuthenticated, signOut }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
 }
